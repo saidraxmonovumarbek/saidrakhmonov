@@ -1,26 +1,323 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ------------------------------------------------------------------ */
+/* Theme tokens. Change the look of the whole site from here.          */
+/* ------------------------------------------------------------------ */
+:root,
+[data-theme="light"] {
+  --bg: #ffffff;
+  --band: #f8f8f8;
+  --fg: #0a0a0a;
+  --muted: #6f6f6f;
+  --soft: #a1a1a1;
+  --line: #d9d9d9;
+  --chip: #f4f4f4;
+  --chip-line: #e4e4e4;
+  --card: #ffffff;
+  --live: #16a34a;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #0f0f0f;
+  --band: #161616;
+  --fg: #f4f4f4;
+  --muted: #8e8e8e;
+  --soft: #5f5f5f;
+  --line: #2b2b2b;
+  --chip: #191919;
+  --chip-line: #2b2b2b;
+  --card: #141414;
+  --live: #22c55e;
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-band: var(--band);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-soft: var(--soft);
+  --color-line: var(--line);
+  --color-chip: var(--chip);
+  --color-chip-line: var(--chip-line);
+  --color-card: var(--card);
+  --color-live: var(--live);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-pulse-dot: pulse-dot 2s ease-out infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------------------------ */
+/* The dashed "blueprint" frame                                        */
+/* ------------------------------------------------------------------ */
+
+/* Full-bleed dashed rule under / over an element inside the frame. */
+.rule-b,
+.rule-t {
+  position: relative;
+}
+.rule-b::after,
+.rule-t::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  border-top: 1px dashed var(--line);
+  pointer-events: none;
+}
+.rule-b::after {
+  bottom: 0;
+}
+.rule-t::before {
+  top: 0;
+}
+
+/* Tinted full-bleed strip that separates sections. */
+.band {
+  position: relative;
+  height: 1.25rem;
+}
+.band::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background: var(--band);
+  border-block: 1px dashed var(--line);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Bits of motion that are simpler in CSS                              */
+/* ------------------------------------------------------------------ */
+
+@keyframes marquee {
+  to {
+    transform: translateX(calc(-50% - var(--marquee-gap, 1.25rem) / 2));
+  }
+}
+
+@keyframes pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--live) 55%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+
+@keyframes cell-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+.contrib[data-inview="true"] .contrib-cell {
+  animation: cell-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--col) * 14ms + var(--row) * 9ms);
+}
+.contrib[data-inview="false"] .contrib-cell {
+  opacity: 0;
+}
+
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Circular reveal when switching theme. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  animation: theme-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--reveal-x, 50%) var(--reveal-y, 0%));
+  }
+  to {
+    clip-path: circle(150vmax at var(--reveal-x, 50%) var(--reveal-y, 0%));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-marquee {
+    animation: none;
+  }
+  .contrib .contrib-cell {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Article body (rendered Markdown)                                    */
+/* ------------------------------------------------------------------ */
+
+.prose {
+  color: var(--fg);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.prose > * + * {
+  margin-top: 1.25em;
+}
+.prose h2 {
+  font-family: var(--font-serif);
+  font-size: 1.9rem;
+  line-height: 1.15;
+  margin-top: 2em;
+}
+.prose h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 1.8em;
+}
+.prose p,
+.prose li {
+  color: color-mix(in srgb, var(--fg) 86%, var(--bg));
+}
+.prose a {
+  color: var(--fg);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.prose a:hover {
+  text-decoration-thickness: 2px;
+}
+.prose strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.3em;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li + li {
+  margin-top: 0.4em;
+}
+.prose li::marker {
+  color: var(--soft);
+}
+.prose blockquote {
+  border-left: 2px solid var(--fg);
+  padding-left: 1em;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.35rem;
+  line-height: 1.4;
+}
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--chip);
+  border: 1px solid var(--chip-line);
+  border-radius: 6px;
+  padding: 0.12em 0.38em;
+}
+.prose pre {
+  background: var(--chip);
+  border: 1px solid var(--chip-line);
+  border-radius: 12px;
+  padding: 1em 1.15em;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.prose pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+.prose hr {
+  border: 0;
+  border-top: 1px dashed var(--line);
+  margin-block: 2.2em;
+}
+.prose img {
+  border-radius: 12px;
+  border: 1px solid var(--chip-line);
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.prose th,
+.prose td {
+  border-bottom: 1px dashed var(--line);
+  padding: 0.55em 0.75em 0.55em 0;
+  text-align: left;
+}
+
+/* Vertical dashed rails of the page frame (drawn above the bands). */
+.frame {
+  position: relative;
+}
+.frame::before,
+.frame::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px dashed var(--line);
+  z-index: 5;
+  pointer-events: none;
+}
+.frame::before {
+  left: 0;
+}
+.frame::after {
+  right: 0;
 }
