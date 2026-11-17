@@ -4,32 +4,36 @@
 
 /* ------------------------------------------------------------------ */
 /* Theme tokens. Change the look of the whole site from here.          */
+/* The live scene sits behind everything; `--panel` is the frosted     */
+/* glass the content is laid on.                                       */
 /* ------------------------------------------------------------------ */
 :root,
 [data-theme="light"] {
   --bg: #ffffff;
-  --band: #f8f8f8;
-  --fg: #0a0a0a;
-  --muted: #6f6f6f;
-  --soft: #a1a1a1;
-  --line: #d9d9d9;
-  --chip: #f4f4f4;
-  --chip-line: #e4e4e4;
-  --card: #ffffff;
+  --panel: rgb(255 255 255 / 0.9);
+  --band: rgb(96 72 190 / 0.05);
+  --fg: #0d0a14;
+  --muted: #645f72;
+  --soft: #9d97ab;
+  --line: rgb(70 50 140 / 0.2);
+  --chip: rgb(108 84 200 / 0.06);
+  --chip-line: rgb(70 50 140 / 0.14);
+  --card: rgb(255 255 255 / 0.85);
   --live: #16a34a;
   color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --bg: #0f0f0f;
-  --band: #161616;
-  --fg: #f4f4f4;
-  --muted: #8e8e8e;
-  --soft: #5f5f5f;
-  --line: #2b2b2b;
-  --chip: #191919;
-  --chip-line: #2b2b2b;
-  --card: #141414;
+  --bg: #0c0915;
+  --panel: rgb(10 7 19 / 0.76);
+  --band: rgb(150 130 255 / 0.05);
+  --fg: #f3f0fa;
+  --muted: #a49db9;
+  --soft: #6f6887;
+  --line: rgb(185 165 255 / 0.16);
+  --chip: rgb(200 185 255 / 0.06);
+  --chip-line: rgb(200 185 255 / 0.13);
+  --card: rgb(24 17 41 / 0.7);
   --live: #22c55e;
   color-scheme: dark;
 }
@@ -58,7 +62,7 @@ html {
 }
 
 body {
-  background: var(--bg);
+  background: #07040d;
   color: var(--fg);
   font-family: var(--font-sans);
   overflow-x: clip;
@@ -90,9 +94,8 @@ body {
 .rule-t::before {
   content: "";
   position: absolute;
-  left: 50%;
-  width: 100vw;
-  transform: translateX(-50%);
+  left: 0;
+  width: 100%;
   border-top: 1px dashed var(--line);
   pointer-events: none;
 }
@@ -103,7 +106,7 @@ body {
   top: 0;
 }
 
-/* Tinted full-bleed strip that separates sections. */
+/* Tinted strip that separates sections. */
 .band {
   position: relative;
   height: 1.25rem;
@@ -111,12 +114,17 @@ body {
 .band::before {
   content: "";
   position: absolute;
-  inset: 0 auto 0 50%;
-  width: 100vw;
-  transform: translateX(-50%);
+  inset: 0;
   background: var(--band);
   border-block: 1px dashed var(--line);
   pointer-events: none;
+}
+
+/* Frosted glass over the live scene. */
+.glass {
+  background: var(--panel);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
 }
 
 /* ------------------------------------------------------------------ */
@@ -301,9 +309,29 @@ body {
   text-align: left;
 }
 
-/* Vertical dashed rails of the page frame (drawn above the bands). */
+/* The content column: a pane of glass over the scene, with dashed rails. */
 .frame {
   position: relative;
+  background: var(--panel);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: 0 0 80px rgb(4 2 10 / 0.45);
+}
+/* On the home page the first screen is the scene itself; the glass starts under it. */
+.frame:has([data-hero]) {
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.frame:has([data-hero]) .panel,
+.frame:has([data-hero]) > footer {
+  background: var(--panel);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
+}
+.frame:has([data-hero]) .panel {
+  box-shadow: 0 -30px 80px rgb(4 2 10 / 0.5);
 }
 .frame::before,
 .frame::after {
@@ -321,18 +349,22 @@ body {
 .frame::after {
   right: 0;
 }
+.frame:has([data-hero])::before,
+.frame:has([data-hero])::after {
+  top: max(34rem, calc(100svh - 4rem));
+}
 
 /* ------------------------------------------------------------------ */
-/* Hero scene (components/banner.tsx)                                  */
+/* The live scene (components/scene-background.tsx)                   */
 /* ------------------------------------------------------------------ */
 
-.currents {
+[data-hero] {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
 
 /* Shown only when WebGL2 is unavailable. */
-.currents-fallback {
+.scene-fallback {
   background:
     radial-gradient(circle at 58% 46%, #d9d6e6 0 3%, #5d5a6b 9%, #141118 13.5%, transparent 14%),
     linear-gradient(115deg, transparent 47%, #ffb347 49%, #ff5a36 51%, #e8174a 52.5%, transparent 54.5%),

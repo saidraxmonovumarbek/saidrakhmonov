@@ -33,6 +33,10 @@ export type Currents = {
   setBoost: (on: boolean) => void;
   jump: () => void;
   setVisible: (visible: boolean) => void;
+  /** 0 at the top of the page, 1 once a full screen has been scrolled. */
+  setScroll: (progress: number) => void;
+  /** Halve the frame rate, for when the scene is mostly covered. */
+  setLowPower: (low: boolean) => void;
   resize: () => void;
   destroy: () => void;
 };
@@ -239,10 +243,12 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
 
   /* ---------------- sizing ---------------- */
 
-  const dpr = () => Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = () => Math.min(window.devicePixelRatio || 1, 1.5);
   const coarse = window.matchMedia?.("(pointer: coarse)").matches ?? false;
-  // fraction of the canvas resolution the raymarch runs at; lowered if frames run long
-  let quality = coarse ? 0.62 : dpr() > 1.4 ? 0.72 : 1;
+  // pixels the raymarch may shade per frame; the canvas itself stays sharp
+  const budget = coarse ? 520_000 : 1_500_000;
+  // extra scale on top of the budget, lowered if frames run long
+  let quality = 1;
   let width = 1;
   let height = 1;
 
@@ -253,8 +259,9 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     height = Math.max(1, Math.round(rect.height * scale));
     canvas.width = width;
     canvas.height = height;
-    const sw = Math.max(1, Math.round(width * quality));
-    const sh = Math.max(1, Math.round(height * quality));
+    const fit = Math.min(1, Math.sqrt(budget / (width * height))) * quality;
+    const sw = Math.max(1, Math.round(width * fit));
+    const sh = Math.max(1, Math.round(height * fit));
     if (sceneTarget) freeTarget(sceneTarget);
     bloom.forEach(freeTarget);
     sceneTarget = makeTarget(sw, sh);
@@ -289,6 +296,10 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     emitCarry: 0,
     visible: true,
     alive: true,
+    scroll: 0,
+    scrollSmooth: 0,
+    lowPower: false,
+    skip: false,
   };
   const particles: Spark[] = [];
 
@@ -412,6 +423,7 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     up: [0, 1, 0] as Vec3,
     fwd: [0, 0, -1] as Vec3,
     focal: 1,
+    shift: [0, 0] as [number, number],
   };
 
   const placeCamera = () => {
@@ -421,9 +433,11 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     const ps = state.pointerSmooth;
     // tall screens see a lot of far field: look further down and pull back a bit
     const portrait = clamp(1 - width / height, 0, 0.5);
-    const az = shot.az + ps[0] * 0.3 + Math.sin(t * 0.21) * 0.05;
-    const el = clamp(lerp(shot.el + portrait * 0.55 - ps[1] * 0.1, 0.075, b * 0.65), 0.06, 1.35);
-    const dist = shot.dist * (1 - 0.17 * b) * (1 + portrait * 0.35);
+    // scrolling the page lifts the camera away, like pulling back from the scene
+    const sc = state.scrollSmooth;
+    const az = shot.az + ps[0] * 0.3 + Math.sin(t * 0.21) * 0.05 + sc * 0.25;
+    const el = clamp(lerp(shot.el + portrait * 0.55 + sc * 0.35 - ps[1] * 0.1, 0.075, b * 0.65), 0.06, 1.35);
+    const dist = shot.dist * (1 - 0.17 * b) * (1 + portrait * 0.35) * (1 + sc * 0.45);
     const fov = shot.fov + 20 * b;
     const sh = state.shake * 0.12 + b * 0.025;
     const target: Vec3 = [
@@ -452,6 +466,9 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     cam.up = upv;
     cam.fwd = fwd;
     cam.focal = 1 / Math.tan((fov * Math.PI) / 360);
+    // on wide screens the content sits in the middle: frame the ball to the right of it
+    const wide = clamp((width / height - 1.1) * 1.6, 0, 0.95);
+    cam.shift = [wide * (1 - 0.6 * b), 0];
   };
 
   /** Project a world point to clip space (null if behind the camera). */
@@ -460,8 +477,8 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     const z = dot(d, cam.fwd);
     if (z < 0.15) return null;
     const m = Math.min(w, h);
-    const ux = (dot(d, cam.right) / z) * cam.focal;
-    const uy = (dot(d, cam.up) / z) * cam.focal;
+    const ux = (dot(d, cam.right) / z) * cam.focal + cam.shift[0];
+    const uy = (dot(d, cam.up) / z) * cam.focal + cam.shift[1];
     return [(ux * m) / w, (uy * m) / h, z];
   };
 
@@ -519,7 +536,7 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
         color = [1.1, 0.85, 1.9, (1 - k) * 0.9];
       } else {
         const fade = Math.sin(Math.PI * clamp(k, 0, 1));
-        color = [1.4, 0.55, 0.9, fade * 0.55];
+        color = [1.4, 0.55, 0.9, fade * 0.4];
       }
       const aspectX = h / Math.min(w, h);
       const aspectY = w / Math.min(w, h);
@@ -527,7 +544,7 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
       let dx = (head[0] - tail[0]) * aspectY;
       let dy = (head[1] - tail[1]) * aspectX;
       let len = Math.hypot(dx, dy);
-      const maxLen = 46 * px;
+      const maxLen = (s.hue === 2 ? 14 : 40) * px;
       if (len > maxLen) {
         dx *= maxLen / len;
         dy *= maxLen / len;
@@ -584,6 +601,7 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     gl.uniform3fv(u.uCamUp, cam.up);
     gl.uniform3fv(u.uCamFwd, cam.fwd);
     gl.uniform1f(u.uFocal, cam.focal);
+    gl.uniform2f(u.uShift, cam.shift[0], cam.shift[1]);
     gl.uniform1f(u.uTime, state.clock % 1000);
     gl.uniform1f(u.uFlow, state.flow);
     gl.uniform3f(u.uBall, 0, state.ballY, 0);
@@ -677,8 +695,8 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     // drop resolution if the GPU cannot keep up
     if (raw > 26 && raw < 250) slowFrames++;
     else slowFrames = Math.max(0, slowFrames - 1);
-    if (slowFrames > 45 && quality > 0.42) {
-      quality = Math.max(0.42, quality * 0.82);
+    if (slowFrames > 45 && quality > 0.45) {
+      quality = Math.max(0.45, quality * 0.82);
       slowFrames = 0;
       allocate();
     }
@@ -687,8 +705,10 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     state.pointerSmooth[0] += (state.pointer[0] - state.pointerSmooth[0]) * k;
     state.pointerSmooth[1] += (state.pointer[1] - state.pointerSmooth[1]) * k;
 
+    state.scrollSmooth += (state.scroll - state.scrollSmooth) * (1 - Math.exp(-dt / 0.3));
     stepSim(dt);
-    render();
+    state.skip = state.lowPower && !state.skip;
+    if (!state.skip) render();
     if (!readySent) {
       readySent = true;
       options.onReady?.();
@@ -741,6 +761,13 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     setVisible(visible) {
       state.visible = visible;
       if (visible) wake();
+    },
+    setScroll(progress) {
+      // a still frame stays put: redrawing on every scroll event is not worth it
+      if (!still) state.scroll = clamp(progress, 0, 1);
+    },
+    setLowPower(low) {
+      state.lowPower = low;
     },
     resize() {
       allocate();

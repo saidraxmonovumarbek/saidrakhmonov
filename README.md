@@ -61,22 +61,27 @@ Each project card draws a gradient cover by default. To show a real
 screenshot, put the image in `public/projects/` and set
 `image: "/projects/my-app.png"` on that project.
 
-## The hero scene
+## The live background
 
-The animation at the top of the home page is rendered live with WebGL2 by
-`lib/currents/` (no video or image files): a chrome ball drops into a
-flowing field of violet ridges and rides a ribbon of lava while the camera
-moves through a loop of shots. Hold on it to accelerate, tap it to make the
-ball jump.
+The whole site sits on a live WebGL2 scene rendered by `lib/currents/`
+(no video or image files): a chrome ball drops into a flowing field of
+violet ridges and rides a ribbon of lava while the camera moves through a
+loop of shots. The content is laid on frosted glass over it; the home page
+opens with a full-screen hero (`components/hero.tsx`) directly on the scene.
+Press and hold on the scene to accelerate, tap it to make the ball jump.
 
 - `lib/currents/shaders.ts`: the look. Colours (`CREST`, `VALLEY`, the lava
   ramp), stripe density (`P`) and ridge height (`H`) are constants at the top.
 - `lib/currents/engine.ts`: the motion. Camera shots (`SHOTS`), timings,
   speed and sparks.
+- `components/scene-background.tsx`: mounts it once for every page, links it
+  to scrolling and the pointer.
+- `--panel` in `app/globals.css`: how see-through the glass is.
 
-It pauses when scrolled off screen, lowers its resolution on slow devices,
-shows a single still frame for people who prefer reduced motion, and falls
-back to a static CSS pattern without WebGL2.
+It caps how many pixels it shades, lowers its resolution further on slow
+devices, halves its frame rate when the content covers it on phones, pauses
+in background tabs, shows a single still frame for people who prefer reduced
+motion, and falls back to a static CSS pattern without WebGL2.
 
 The previous pixel-art landscape is still in `lib/pixel-scene.ts` if you
 want it back.

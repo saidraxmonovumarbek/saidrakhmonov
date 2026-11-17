@@ -1,18 +1,15 @@
-import { ArrowRight, ArrowUpRight, MapPin } from "lucide-react";
-import Image from "next/image";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ArticleList } from "@/components/article-list";
-import { Banner } from "@/components/banner";
 import { GithubActivity } from "@/components/github-activity";
+import { Hero } from "@/components/hero";
 import { Highlights } from "@/components/highlights";
 import { ContactIcon } from "@/components/icons";
-import { LocalTime } from "@/components/local-time";
 import { Magnetic } from "@/components/magnetic";
-import { Reveal, SplitText, Stagger, StaggerItem } from "@/components/motion";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion";
 import { ProjectGrid } from "@/components/project-grid";
 import { Quote } from "@/components/quote";
 import { RichText } from "@/components/rich-text";
-import { RoleRotator } from "@/components/role-rotator";
 import { Section } from "@/components/section";
 import { TechStack } from "@/components/tech-stack";
 import { projects } from "@/content/projects";
@@ -37,54 +34,9 @@ export default async function Home() {
 
   return (
     <>
-      <Banner />
+      <Hero />
 
-      {/* Profile */}
-      <Reveal className="flex items-start gap-5 px-5 py-6 sm:gap-7 sm:px-6">
-        <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl border-4 border-chip bg-fg shadow-md ring-1 ring-chip-line sm:size-[7.25rem]">
-          {site.avatar ? (
-            <Image src={site.avatar} alt={site.name} fill priority sizes="116px" className="object-cover" />
-          ) : (
-            <span className="grid size-full place-items-center font-serif text-5xl text-bg">
-              {site.initials}
-            </span>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex min-h-6 items-center justify-between gap-3">
-            {site.status.text ? (
-              <p className="flex items-center gap-2 text-[13px] text-muted">
-                <span
-                  className={
-                    site.status.available
-                      ? "size-1.5 animate-pulse-dot rounded-full bg-live"
-                      : "size-1.5 rounded-full bg-soft"
-                  }
-                />
-                {site.status.text}
-              </p>
-            ) : (
-              <span />
-            )}
-            <LocalTime timeZone={site.timeZone} className="hidden sm:flex" />
-          </div>
-          <SplitText
-            as="h1"
-            immediate
-            text={site.name}
-            className="mt-1.5 font-serif text-[2.1rem] leading-[1.05] tracking-[-0.01em] sm:text-[2.6rem]"
-          />
-          <p className="mt-1.5 text-lg font-semibold tracking-wider text-muted">
-            <RoleRotator roles={site.roles} />
-          </p>
-          <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm font-medium text-muted">
-            <MapPin className="size-3.5" />
-            {site.location}
-            <LocalTime timeZone={site.timeZone} className="ml-2 flex font-normal sm:hidden" />
-          </p>
-        </div>
-      </Reveal>
-
+      <div className="panel">
       <Section id="about" title="About">
         <Stagger as="ul" className="space-y-4 text-[17px] leading-relaxed">
           {site.about.map((line) => (
@@ -155,6 +107,7 @@ export default async function Home() {
       </Section>
 
       <Quote text={site.quote.text} author={site.quote.author} />
+      </div>
     </>
   );
 }

@@ -48,8 +48,8 @@ export function SiteNav() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-bg/95 backdrop-blur-md">
-      <div className="rule-b mx-auto flex h-16 max-w-3xl items-center justify-between border-x border-dashed border-line px-5 sm:px-6">
+    <header className="sticky top-0 z-50">
+      <div className="glass rule-b relative mx-auto flex h-16 max-w-3xl items-center justify-between border-x border-dashed border-line px-5 sm:px-6">
         <Link
           href="/"
           onClick={close}
@@ -163,7 +163,7 @@ export function SiteNav() {
         <motion.div
           aria-hidden
           style={{ scaleX: progress }}
-          className="absolute inset-x-0 -bottom-px z-10 h-px origin-left bg-fg"
+          className="absolute inset-x-0 -bottom-px z-10 h-0.5 origin-left bg-gradient-to-r from-[#ff2d6f] via-[#ff7a1a] to-[#ffd36b]"
         />
       </div>
 
@@ -174,9 +174,9 @@ export function SiteNav() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
-            className="overflow-hidden bg-bg sm:hidden"
+            className="overflow-hidden sm:hidden"
           >
-            <ul className="rule-b mx-auto max-w-3xl border-x border-dashed border-line px-3 py-3">
+            <ul className="glass rule-b mx-auto max-w-3xl border-x border-dashed border-line px-3 py-3">
               {[...nav.main, ...nav.more].map((item, i) => (
                 <motion.li
                   key={item.href}

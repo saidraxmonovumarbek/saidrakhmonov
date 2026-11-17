@@ -26,6 +26,7 @@ uniform vec3  uCamRight;
 uniform vec3  uCamUp;
 uniform vec3  uCamFwd;
 uniform float uFocal;
+uniform vec2  uShift;  // lens shift: moves the subject off centre without rotating the camera
 uniform float uTime;
 uniform float uFlow;
 uniform vec3  uBall;
@@ -240,7 +241,7 @@ vec3 fieldInReflection(vec3 p, vec3 rd, float dist, float contrast) {
 void main() {
   vec2 frag = gl_FragCoord.xy;
   float m = min(uRes.x, uRes.y);
-  vec2 uv = (frag - 0.5 * uRes) / (0.5 * m);
+  vec2 uv = (frag - 0.5 * uRes) / (0.5 * m) - uShift;
   vec3 ro = uCamPos;
   vec3 rd = normalize(uCamFwd * uFocal + uCamRight * uv.x + uCamUp * uv.y);
   float pix = 2.0 / (uFocal * m);
