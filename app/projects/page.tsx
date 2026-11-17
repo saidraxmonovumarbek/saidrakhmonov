@@ -16,8 +16,7 @@ export default function ProjectsPage() {
         title="Projects"
         text="Things I have designed, built and shipped. Some are live products, some are experiments that taught me something."
       />
-      <div className="band" aria-hidden />
-      <div className="px-2.5">
+      <div data-panel className="card p-2.5">
         <ProjectGrid projects={projects} />
       </div>
     </>

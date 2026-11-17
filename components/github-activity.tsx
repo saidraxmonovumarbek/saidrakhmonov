@@ -5,8 +5,15 @@ import { site } from "@/content/site";
 import { getContributions } from "@/lib/github";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const SHADE = [7, 26, 46, 68, 92];
-const shade = (level: number) => `color-mix(in srgb, var(--fg) ${SHADE[level]}%, var(--bg))`;
+// empty days are faint lilac; busy days heat up toward lava orange
+const SHADE = [
+  "rgb(205 190 255 / 0.08)",
+  "rgb(168 130 255 / 0.45)",
+  "#c060ff",
+  "#ff4d7d",
+  "#ff8a2a",
+];
+const shade = (level: number) => SHADE[level];
 
 function label(day: { date: string; count: number | null }) {
   const date = new Date(`${day.date}T00:00:00Z`).toLocaleDateString("en-US", {

@@ -29,13 +29,12 @@ export function Quote({ text, author }: { text: string; author: string }) {
   const authorOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1]);
 
   return (
-    <section>
-      <div className="band" aria-hidden />
+    <section data-panel className="card">
       <figure ref={ref} className="px-6 py-16 text-center sm:px-14 sm:py-20">
-        <QuoteIcon className="mx-auto size-8 fill-current text-muted" aria-hidden />
+        <QuoteIcon className="mx-auto size-8 fill-current text-lilac" aria-hidden />
         <blockquote
           aria-label={text}
-          className="mt-7 flex flex-wrap justify-center gap-x-[0.3em] text-[1.75rem] leading-[1.35] font-light tracking-wide italic sm:text-[2.1rem]"
+          className="mt-7 flex flex-wrap justify-center gap-x-[0.28em] text-[1.75rem] leading-[1.3] font-normal tracking-[-0.025em] sm:text-[2.2rem]"
         >
           {words.map((word, i) => (
             <Word

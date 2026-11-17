@@ -16,7 +16,7 @@ function Cover({ project }: { project: Project }) {
   const [first, second] = cover.headline.split("\n");
   return (
     <div
-      className="relative aspect-[16/10] overflow-hidden rounded-xl"
+      className="relative aspect-[16/10] overflow-hidden rounded-xl ring-1 ring-white/10"
       style={{
         background: `radial-gradient(130% 130% at 0% 0%, #ffffff 0%, ${cover.from} 30%, ${cover.to} 100%)`,
       }}
@@ -81,11 +81,11 @@ function Cover({ project }: { project: Project }) {
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <article className="group flex h-full flex-col p-2.5 [container-type:inline-size]">
+    <article className="group flex h-full flex-col p-2.5 pb-3 [container-type:inline-size]">
       <Cover project={project} />
       <div className="mt-4 flex items-start justify-between gap-3 px-0.5">
         <div className="min-w-0">
-          <h3 className="text-[1.35rem] leading-tight font-semibold tracking-tight">{project.title}</h3>
+          <h3 className="text-[1.35rem] leading-tight font-medium tracking-[-0.03em]">{project.title}</h3>
           <p className="mt-0.5 text-sm text-muted">{project.tagline}</p>
         </div>
         <span className="mt-1.5 flex shrink-0 items-center gap-2 text-sm font-medium text-muted">
@@ -93,13 +93,13 @@ export function ProjectCard({ project }: { project: Project }) {
           {project.status}
         </span>
       </div>
-      <p className="mt-4 flex-1 px-0.5 leading-relaxed text-muted">{project.description}</p>
+      <p className="mt-4 flex-1 px-0.5 leading-relaxed text-white/75">{project.description}</p>
       <div className="mt-5 flex items-end justify-between gap-3 px-0.5 pb-1">
         <ul className="flex flex-wrap gap-1.5">
           {project.tags.map((tag) => (
             <li
               key={tag}
-              className="rounded-md border border-chip-line bg-chip px-2 py-1 text-[13px] leading-none"
+              className="rounded-full border border-chip-line bg-chip px-2.5 py-1 text-[12.5px] leading-none text-white/80"
             >
               {tag}
             </li>

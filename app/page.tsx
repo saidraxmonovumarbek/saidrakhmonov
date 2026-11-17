@@ -37,76 +37,70 @@ export default async function Home() {
       <Hero />
 
       <div className="panel">
-      <Section id="about" title="About">
-        <Stagger as="ul" className="space-y-4 text-[17px] leading-relaxed">
-          {site.about.map((line) => (
-            <StaggerItem as="li" key={line} className="flex gap-3">
-              <span aria-hidden className="mt-[0.7em] size-1 shrink-0 rounded-full bg-soft" />
-              <span>
-                <RichText text={line} />
-              </span>
-            </StaggerItem>
-          ))}
-        </Stagger>
-      </Section>
-
-      <Section id="contact" title="Contact" flush>
-        <Stagger as="ul" className="grid grid-cols-2 px-2 sm:flex">
-          {site.contact.map((item) => (
-            <StaggerItem
-              as="li"
-              key={item.label}
-              className="border-dashed border-line sm:flex-auto sm:not-last:border-r"
-            >
-              <a
-                href={item.href}
-                target={item.href.startsWith("http") ? "_blank" : undefined}
-                rel="noreferrer"
-                className="group flex items-center gap-2 px-2.5 py-2.5"
-              >
-                <span className="grid size-9 shrink-0 place-items-center rounded-[10px] border border-chip-line bg-card shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:-rotate-6 group-hover:border-fg group-hover:shadow-md">
-                  <ContactIcon name={item.icon} className="size-[18px]" />
+        <Section id="about" title="About">
+          <Stagger as="ul" className="space-y-5 text-[17px] leading-relaxed text-white/85 sm:text-lg">
+            {site.about.map((line) => (
+              <StaggerItem as="li" key={line} className="flex gap-3.5">
+                <span aria-hidden className="mt-[0.72em] size-1 shrink-0 rounded-full bg-lilac" />
+                <span>
+                  <RichText text={line} />
                 </span>
-                <span className="text-[15px] font-medium">{item.label}</span>
-                <ArrowUpRight className="size-3.5 shrink-0 text-soft transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-fg" />
-              </a>
-            </StaggerItem>
-          ))}
-        </Stagger>
-      </Section>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </Section>
 
-      <Section id="projects" title="Projects" action={<ViewAll href="/projects" />} className="!px-2.5 !py-0">
-        <ProjectGrid projects={featured} />
-      </Section>
+        <Section id="contact" title="Contact" flush className="p-3 sm:p-4">
+          <Stagger as="ul" className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+            {site.contact.map((item) => (
+              <StaggerItem as="li" key={item.label}>
+                <a
+                  href={item.href}
+                  target={item.href.startsWith("http") ? "_blank" : undefined}
+                  rel="noreferrer"
+                  className="group flex items-center gap-2.5 rounded-2xl border border-chip-line bg-chip px-3 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.09]"
+                >
+                  <ContactIcon name={item.icon} className="size-[18px] shrink-0 text-lilac transition-transform duration-300 group-hover:-rotate-6" />
+                  <span className="text-[15px] font-medium">{item.label}</span>
+                  <ArrowUpRight className="ml-auto size-3.5 shrink-0 text-soft transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-fg" />
+                </a>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </Section>
 
-      <TechStack />
+        <Section id="projects" title="Projects" action={<ViewAll href="/projects" />} flush className="p-2.5">
+          <ProjectGrid projects={featured} />
+        </Section>
 
-      <GithubActivity />
+        <TechStack />
 
-      <Section id="writing" title="Writing" action={<ViewAll href="/articles" />} flush>
-        <ArticleList articles={articles} />
-      </Section>
+        <GithubActivity />
 
-      <Highlights />
+        <Section id="writing" title="Writing" action={<ViewAll href="/articles" />} flush>
+          <ArticleList articles={articles} />
+        </Section>
 
-      <Section id="talk" title={site.cta.heading}>
-        <Reveal className="py-14 text-center">
-          <p className="text-xl text-muted sm:text-[1.35rem]">{site.cta.text}</p>
-          <div className="mt-7">
-            <Magnetic>
-              <a
-                href={site.cta.href}
-                className="group inline-flex items-center gap-2.5 rounded-full bg-fg px-8 py-3.5 text-[17px] font-semibold text-bg shadow-lg shadow-black/10 transition-shadow hover:shadow-xl hover:shadow-black/20"
-              >
-                {site.cta.button}
-                <ArrowRight className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
-              </a>
-            </Magnetic>
-          </div>
-        </Reveal>
-      </Section>
+        <Highlights />
 
-      <Quote text={site.quote.text} author={site.quote.author} />
+        <Section id="talk" title={site.cta.heading}>
+          <Reveal className="py-12 text-center">
+            <p className="mx-auto max-w-md text-xl leading-snug text-white/85 sm:text-2xl">{site.cta.text}</p>
+            <div className="mt-8">
+              <Magnetic>
+                <a
+                  href={site.cta.href}
+                  className="bg-lava group inline-flex items-center gap-2.5 rounded-full px-8 py-3.5 text-[17px] font-semibold text-[#14061b] shadow-[0_10px_40px_-8px_rgb(255_90_40/0.6)] transition-shadow hover:shadow-[0_14px_50px_-6px_rgb(255_90_40/0.8)]"
+                >
+                  {site.cta.button}
+                  <ArrowRight className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
+                </a>
+              </Magnetic>
+            </div>
+          </Reveal>
+        </Section>
+
+        <Quote text={site.quote.text} author={site.quote.author} />
       </div>
     </>
   );

@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createCurrents, type Currents } from "@/lib/currents/engine";
+import { soundLevel } from "@/lib/sound";
 
 type Status = "loading" | "ready" | "fallback";
 
@@ -31,6 +32,7 @@ export function SceneBackground() {
       still,
       onReady: () => setStatus("ready"),
       onError: () => setStatus("fallback"),
+      getLevel: soundLevel,
     });
     if (!engine) {
       setStatus("fallback");
@@ -60,7 +62,7 @@ export function SceneBackground() {
       const heroBottom = hero ? hero.getBoundingClientRect().bottom : 0;
       engineRef.current?.setScroll(progress);
       engineRef.current?.setLowPower(window.innerWidth < 900 && heroBottom < 80);
-      if (dimRef.current) dimRef.current.style.opacity = String(hero ? progress * 0.5 : 0.42);
+      if (dimRef.current) dimRef.current.style.opacity = String(hero ? progress * 0.35 : 0.3);
     };
     update();
     window.addEventListener("scroll", update, { passive: true });

@@ -24,11 +24,11 @@ export default function ExperiencePage() {
             <StaggerItem
               as="li"
               key={`${job.company}-${job.period}`}
-              className={`grid gap-x-8 gap-y-3 px-5 py-8 sm:grid-cols-[9.5rem_1fr] sm:px-6 ${i > 0 ? "rule-t" : ""}`}
+              className={`grid gap-x-8 gap-y-3 px-5 py-8 sm:grid-cols-[9.5rem_1fr] sm:px-7 ${i > 0 ? "rule-t" : ""}`}
             >
-              <p className="pt-1 font-mono text-xs tracking-wide text-soft">{job.period}</p>
+              <p className="pt-1 font-mono text-xs tracking-wide text-lilac/80">{job.period}</p>
               <div>
-                <h3 className="text-xl font-semibold tracking-tight">{job.role}</h3>
+                <h3 className="text-xl font-medium tracking-[-0.025em]">{job.role}</h3>
                 <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px] text-muted">
                   {job.href ? (
                     <a
@@ -48,10 +48,10 @@ export default function ExperiencePage() {
                     {job.location}
                   </span>
                 </p>
-                <ul className="mt-4 space-y-2.5 leading-relaxed text-muted">
+                <ul className="mt-4 space-y-2.5 leading-relaxed text-white/75">
                   {job.points.map((point) => (
                     <li key={point} className="flex gap-3">
-                      <span aria-hidden className="mt-[0.7em] size-1 shrink-0 rounded-full bg-soft" />
+                      <span aria-hidden className="mt-[0.7em] size-1 shrink-0 rounded-full bg-lilac" />
                       {point}
                     </li>
                   ))}
@@ -60,7 +60,7 @@ export default function ExperiencePage() {
                   {job.tags.map((tag) => (
                     <li
                       key={tag}
-                      className="rounded-md border border-chip-line bg-chip px-2 py-1 text-[13px] leading-none"
+                      className="rounded-full border border-chip-line bg-chip px-2.5 py-1 text-[12.5px] leading-none text-white/80"
                     >
                       {tag}
                     </li>
@@ -78,13 +78,13 @@ export default function ExperiencePage() {
             <StaggerItem
               as="li"
               key={item.school}
-              className={`grid gap-x-8 gap-y-3 px-5 py-8 sm:grid-cols-[9.5rem_1fr] sm:px-6 ${i > 0 ? "rule-t" : ""}`}
+              className={`grid gap-x-8 gap-y-3 px-5 py-8 sm:grid-cols-[9.5rem_1fr] sm:px-7 ${i > 0 ? "rule-t" : ""}`}
             >
-              <p className="pt-1 font-mono text-xs tracking-wide text-soft">{item.period}</p>
+              <p className="pt-1 font-mono text-xs tracking-wide text-lilac/80">{item.period}</p>
               <div>
-                <h3 className="text-xl font-semibold tracking-tight">{item.degree}</h3>
+                <h3 className="text-xl font-medium tracking-[-0.025em]">{item.degree}</h3>
                 <p className="mt-1 text-[15px] font-medium">{item.school}</p>
-                {item.note && <p className="mt-3 leading-relaxed text-muted">{item.note}</p>}
+                {item.note && <p className="mt-3 leading-relaxed text-white/75">{item.note}</p>}
               </div>
             </StaggerItem>
           ))}

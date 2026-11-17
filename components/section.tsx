@@ -3,8 +3,8 @@ import { SplitText } from "@/components/motion";
 import { cn } from "@/lib/utils";
 
 /**
- * A page section in the "blueprint" style: a tinted band, a serif heading
- * with a dashed rule under it, then the content.
+ * A page section: a pane of dark glass floating over the live scene, with a
+ * heading row and the content below it.
  */
 export function Section({
   id,
@@ -14,6 +14,7 @@ export function Section({
   children,
   className,
   flush = false,
+  strong = false,
 }: {
   id?: string;
   title: string;
@@ -25,18 +26,20 @@ export function Section({
   className?: string;
   /** Remove the default padding around the content. */
   flush?: boolean;
+  /** Denser glass, for long text. */
+  strong?: boolean;
 }) {
   return (
-    <section id={id}>
-      <div className="band" aria-hidden />
-      <div className="rule-b flex flex-wrap items-end justify-between gap-x-4 gap-y-2 px-5 pt-3.5 pb-2.5 sm:px-6">
-        <div className="flex items-baseline gap-3">
-          <SplitText text={title} className="font-serif text-[2rem] leading-none tracking-[-0.01em]" />
+    <section id={id} data-panel className={cn("card", strong && "card-strong")}>
+      <div className="rule-b flex flex-wrap items-end justify-between gap-x-4 gap-y-2 px-5 pt-5 pb-4 sm:px-7 sm:pt-6">
+        <div className="flex items-center gap-3">
+          <span aria-hidden className="bg-lava size-1.5 shrink-0 rounded-full shadow-[0_0_12px_#ff7a1a]" />
+          <SplitText text={title} className="text-[1.6rem] leading-none font-medium tracking-[-0.03em]" />
           {aside}
         </div>
         {action}
       </div>
-      <div className={cn(!flush && "px-5 py-7 sm:px-6", className)}>{children}</div>
+      <div className={cn(!flush && "px-5 py-7 sm:px-7", className)}>{children}</div>
     </section>
   );
 }
@@ -52,15 +55,15 @@ export function PageHeader({
   text: string;
 }) {
   return (
-    <header className="px-5 pt-14 pb-9 sm:px-6">
-      <p className="font-mono text-xs tracking-wider text-soft">( {eyebrow} )</p>
+    <header data-panel className="card mt-6 px-5 pt-12 pb-10 sm:px-7 sm:pt-16">
+      <p className="font-mono text-xs tracking-[0.18em] text-lilac uppercase">{eyebrow}</p>
       <SplitText
         as="h1"
         immediate
         text={title}
-        className="mt-3 font-serif text-5xl leading-[1.02] tracking-[-0.015em] sm:text-6xl"
+        className="mt-4 text-5xl leading-[0.98] font-medium tracking-[-0.045em] sm:text-7xl"
       />
-      <p className="mt-4 max-w-xl text-[17px] leading-relaxed text-muted">{text}</p>
+      <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-muted">{text}</p>
     </header>
   );
 }

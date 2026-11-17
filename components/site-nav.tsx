@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { SoundToggle } from "@/components/sound-toggle";
 import { nav, site } from "@/content/site";
 import { cn } from "@/lib/utils";
 
@@ -48,14 +48,15 @@ export function SiteNav() {
   };
 
   return (
-    <header className="sticky top-0 z-50">
-      <div className="glass rule-b relative mx-auto flex h-16 max-w-3xl items-center justify-between border-x border-dashed border-line px-5 sm:px-6">
+    <header className="sticky top-0 z-50 px-3 pt-3 sm:px-4">
+      <div className="glass relative mx-auto flex h-14 max-w-3xl items-center justify-between overflow-hidden rounded-full pr-2 pl-5 sm:pl-6">
         <Link
           href="/"
           onClick={close}
-          className="font-serif text-[2rem] leading-none tracking-[-0.01em] transition-opacity hover:opacity-70"
+          className="text-[1.3rem] leading-none font-medium tracking-[-0.03em] transition-opacity hover:opacity-70"
         >
           {site.shortName}
+          <span className="text-lava">.</span>
         </Link>
 
         <nav aria-label="Main" className="flex items-center gap-1">
@@ -68,7 +69,7 @@ export function SiteNav() {
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "relative block px-3 py-2 text-[15px] transition-colors",
+                      "relative block rounded-full px-3 py-2 text-[15px] transition-colors",
                       active ? "font-semibold text-fg" : "text-muted hover:text-fg",
                     )}
                   >
@@ -76,7 +77,7 @@ export function SiteNav() {
                     {active && (
                       <motion.span
                         layoutId="nav-dot"
-                        className="absolute -bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full bg-fg"
+                        className="bg-lava absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full"
                         transition={{ type: "spring", stiffness: 420, damping: 32 }}
                       />
                     )}
@@ -108,7 +109,7 @@ export function SiteNav() {
                   {moreActive && (
                     <motion.span
                       layoutId="nav-dot"
-                      className="absolute -bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full bg-fg"
+                      className="bg-lava absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full"
                       transition={{ type: "spring", stiffness: 420, damping: 32 }}
                     />
                   )}
@@ -121,9 +122,9 @@ export function SiteNav() {
                       animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
                       exit={{ opacity: 0, y: -6, scale: 0.97, filter: "blur(6px)" }}
                       transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
-                      className="absolute top-full right-0 w-56 origin-top-right pt-2"
+                      className="absolute top-full right-0 w-56 origin-top-right pt-3"
                     >
-                      <div className="rounded-xl border border-chip-line bg-card p-1.5 shadow-xl shadow-black/5 dark:shadow-black/40">
+                      <div className="glass rounded-2xl p-1.5">
                         {nav.more.map((item) => (
                           <Link
                             key={item.href}
@@ -131,8 +132,8 @@ export function SiteNav() {
                             role="menuitem"
                             onClick={close}
                             className={cn(
-                              "block rounded-lg px-3 py-2 transition-colors hover:bg-chip",
-                              isActive(pathname, item.href) && "bg-chip",
+                              "block rounded-xl px-3 py-2 transition-colors hover:bg-white/[0.07]",
+                              isActive(pathname, item.href) && "bg-white/[0.07]",
                             )}
                           >
                             <span className="block text-[15px] font-medium">{item.label}</span>
@@ -147,14 +148,16 @@ export function SiteNav() {
             </li>
           </ul>
 
-          <ThemeToggle />
+          <span className="ml-1.5">
+            <SoundToggle />
+          </span>
 
           <button
             type="button"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
-            className="grid size-9 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:bg-chip hover:text-fg sm:hidden"
+            className="ml-1 grid size-9 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:bg-white/[0.08] hover:text-fg sm:hidden"
           >
             {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -163,7 +166,7 @@ export function SiteNav() {
         <motion.div
           aria-hidden
           style={{ scaleX: progress }}
-          className="absolute inset-x-0 -bottom-px z-10 h-0.5 origin-left bg-gradient-to-r from-[#ff2d6f] via-[#ff7a1a] to-[#ffd36b]"
+          className="bg-lava absolute inset-x-0 bottom-0 z-10 h-[2px] origin-left"
         />
       </div>
 
@@ -174,9 +177,9 @@ export function SiteNav() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
-            className="overflow-hidden sm:hidden"
+            className="overflow-hidden pt-2 sm:hidden"
           >
-            <ul className="glass rule-b mx-auto max-w-3xl border-x border-dashed border-line px-3 py-3">
+            <ul className="glass mx-auto max-w-3xl rounded-3xl p-2">
               {[...nav.main, ...nav.more].map((item, i) => (
                 <motion.li
                   key={item.href}
@@ -188,12 +191,12 @@ export function SiteNav() {
                     href={item.href}
                     onClick={close}
                     className={cn(
-                      "flex items-center justify-between rounded-lg px-3 py-2.5 font-serif text-2xl",
+                      "flex items-center justify-between rounded-2xl px-4 py-3 text-xl font-medium tracking-[-0.02em]",
                       isActive(pathname, item.href) ? "text-fg" : "text-muted",
                     )}
                   >
                     {item.label}
-                    {isActive(pathname, item.href) && <span className="size-1.5 rounded-full bg-fg" />}
+                    {isActive(pathname, item.href) && <span className="bg-lava size-1.5 rounded-full" />}
                   </Link>
                 </motion.li>
               ))}

@@ -43,7 +43,7 @@ export default function ArticlePage({ params }: PageProps<"/articles/[slug]">) {
 /** Shown for a moment while an article that was not pre-built is loading. */
 function ArticleSkeleton() {
   return (
-    <div className="animate-pulse px-5 pt-10 pb-24 sm:px-6" aria-busy="true" aria-label="Loading article">
+    <div className="card mt-6 animate-pulse px-5 pt-10 pb-24 sm:px-8" aria-busy="true" aria-label="Loading article">
       <div className="h-4 w-28 rounded bg-chip" />
       <div className="mt-9 h-3 w-48 rounded bg-chip" />
       <div className="mt-4 h-12 w-4/5 rounded-lg bg-chip" />
@@ -64,7 +64,7 @@ async function ArticleView({ params }: Pick<PageProps<"/articles/[slug]">, "para
 
   return (
     <article>
-      <header className="px-5 pt-10 pb-9 sm:px-6">
+      <header data-panel className="card mt-6 px-5 pt-8 pb-10 sm:px-8 sm:pt-9">
         <Link
           href="/articles"
           className="group inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-fg"
@@ -72,12 +72,12 @@ async function ArticleView({ params }: Pick<PageProps<"/articles/[slug]">, "para
           <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
           All articles
         </Link>
-        <p className="mt-8 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-soft">
+        <p className="mt-10 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-lilac/80">
           <time dateTime={article.date}>{formatDate(article.date)}</time>
           <span aria-hidden>/</span>
           <span>{article.readingMinutes} min read</span>
           {article.tags.map((tag) => (
-            <span key={tag} className="rounded border border-chip-line bg-chip px-1.5 py-0.5 text-muted">
+            <span key={tag} className="rounded-full border border-chip-line bg-chip px-2 py-0.5 text-white/75">
               {tag}
             </span>
           ))}
@@ -86,43 +86,42 @@ async function ArticleView({ params }: Pick<PageProps<"/articles/[slug]">, "para
           as="h1"
           immediate
           text={article.title}
-          className="mt-3 font-serif text-[2.6rem] leading-[1.05] tracking-[-0.015em] sm:text-[3.4rem]"
+          className="mt-4 text-[2.4rem] leading-[1.04] font-medium tracking-[-0.045em] sm:text-[3.4rem]"
         />
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">{article.summary}</p>
+        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">{article.summary}</p>
       </header>
 
-      <div className="band" aria-hidden />
+      <div data-panel className="card card-strong">
+        <Reveal className="prose px-5 py-10 sm:px-8 sm:py-12" delay={0.15}>
+          <Markdown remarkPlugins={[remarkGfm]}>{article.content}</Markdown>
+        </Reveal>
+      </div>
 
-      <Reveal className="prose px-5 py-10 sm:px-6" delay={0.15}>
-        <Markdown remarkPlugins={[remarkGfm]}>{article.content}</Markdown>
-      </Reveal>
-
-      <div className="band" aria-hidden />
-      <nav aria-label="More articles" className="grid sm:grid-cols-2">
+      <nav aria-label="More articles" data-panel className="card grid sm:grid-cols-2">
         {older ? (
           <Link
             href={`/articles/${older.slug}`}
-            className="group px-5 py-6 transition-colors hover:bg-band sm:border-r sm:border-dashed sm:border-line sm:px-6"
+            className="group px-5 py-6 transition-colors hover:bg-white/[0.05] sm:border-r sm:border-line sm:px-7"
           >
-            <span className="flex items-center gap-1.5 font-mono text-xs text-soft">
+            <span className="flex items-center gap-1.5 font-mono text-xs text-lilac/80">
               <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
               Older
             </span>
-            <span className="mt-1.5 block font-serif text-2xl leading-tight">{older.title}</span>
+            <span className="mt-2 block text-xl leading-tight font-medium tracking-[-0.025em]">{older.title}</span>
           </Link>
         ) : (
-          <span className="max-sm:hidden sm:border-r sm:border-dashed sm:border-line" />
+          <span className="max-sm:hidden sm:border-r sm:border-line" />
         )}
         {newer && (
           <Link
             href={`/articles/${newer.slug}`}
-            className="group px-5 py-6 text-right transition-colors hover:bg-band max-sm:rule-t sm:px-6"
+            className="group px-5 py-6 text-right transition-colors hover:bg-white/[0.05] max-sm:rule-t sm:px-7"
           >
-            <span className="flex items-center justify-end gap-1.5 font-mono text-xs text-soft">
+            <span className="flex items-center justify-end gap-1.5 font-mono text-xs text-lilac/80">
               Newer
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
             </span>
-            <span className="mt-1.5 block font-serif text-2xl leading-tight">{newer.title}</span>
+            <span className="mt-2 block text-xl leading-tight font-medium tracking-[-0.025em]">{newer.title}</span>
           </Link>
         )}
       </nav>

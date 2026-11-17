@@ -25,6 +25,8 @@ export type CurrentsOptions = {
   onReady?: () => void;
   /** Called if the GPU context is lost or WebGL2 is unavailable mid-run. */
   onError?: () => void;
+  /** Read every frame: 0..1 loudness of the music's low end, to pulse the lava with. */
+  getLevel?: () => number;
 };
 
 export type Currents = {
@@ -293,6 +295,7 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     pointerSmooth: [0, 0] as [number, number],
     shake: 0,
     heat: 1,
+    beat: 0,
     emitCarry: 0,
     visible: true,
     alive: true,
@@ -352,7 +355,10 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     state.boost += (wantBoost - state.boost) * (1 - Math.exp(-dt / (wantBoost > state.boost ? 0.35 : 0.9)));
     const speed = BASE_SPEED * (1 + (BOOST_SPEED - 1) * state.boost);
     state.flow = (state.flow + speed * dt) % FLOW_WRAP;
-    state.heat = 1 + 0.35 * state.boost;
+    // the music: fast attack, slow release
+    const level = options.getLevel?.() ?? 0;
+    state.beat += (level - state.beat) * (1 - Math.exp(-dt / (level > state.beat ? 0.04 : 0.32)));
+    state.heat = 1 + 0.35 * state.boost + 0.6 * state.beat;
 
     // the ball
     if (!state.dropped && state.clock >= state.dropAt) state.dropped = true;
@@ -377,7 +383,7 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     // sparks where the lava meets the ball
     const settled = clamp(1 - (state.ballY - REST_Y) / 0.9, 0, 1);
     const lavaNear = Math.exp(-Math.abs(meander(-state.flow)) * 2.2) * settled;
-    state.emitCarry += dt * (14 + 70 * state.boost) * lavaNear;
+    state.emitCarry += dt * (14 + 70 * state.boost + 45 * state.beat) * lavaNear;
     while (state.emitCarry >= 1) {
       state.emitCarry -= 1;
       const side = Math.random() < 0.5 ? -1 : 1;
@@ -439,7 +445,7 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     const el = clamp(lerp(shot.el + portrait * 0.55 + sc * 0.35 - ps[1] * 0.1, 0.075, b * 0.65), 0.06, 1.35);
     const dist = shot.dist * (1 - 0.17 * b) * (1 + portrait * 0.35) * (1 + sc * 0.45);
     const fov = shot.fov + 20 * b;
-    const sh = state.shake * 0.12 + b * 0.025;
+    const sh = state.shake * 0.12 + b * 0.025 + state.beat * 0.012;
     const target: Vec3 = [
       shot.target[0] + Math.sin(t * 1.31) * 0.03 + Math.sin(t * 23.0) * sh,
       shot.target[1] + REST_Y + (state.ballY - REST_Y) * 0.25 + Math.sin(t * 1.73 + 1) * 0.025 + Math.sin(t * 19.0 + 2) * sh,
@@ -674,7 +680,7 @@ export function createCurrents(canvas: HTMLCanvasElement, options: CurrentsOptio
     gl.uniform1f(composite.u.uTime, state.clock % 1000);
     gl.uniform1f(composite.u.uDec, 1 / enc);
     gl.uniform1f(composite.u.uFade, still ? 1 : clamp(state.clock / 0.9, 0, 1));
-    gl.uniform1f(composite.u.uBloomGain, (floatTargets ? 0.55 : 0.7) * (1 + 0.4 * state.boost));
+    gl.uniform1f(composite.u.uBloomGain, (floatTargets ? 0.55 : 0.7) * (1 + 0.4 * state.boost + 0.35 * state.beat));
     fullscreen();
   };
 

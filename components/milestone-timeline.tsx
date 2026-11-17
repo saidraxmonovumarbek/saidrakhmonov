@@ -16,11 +16,11 @@ export function MilestoneTimeline({ milestones }: { milestones: Milestone[] }) {
 
   return (
     <div ref={ref} className="relative px-5 pt-10 pb-14 sm:px-6">
-      <div aria-hidden className="absolute top-10 bottom-14 left-7 w-px -translate-x-1/2 bg-line sm:left-8" />
+      <div aria-hidden className="absolute top-10 bottom-14 left-7 w-px -translate-x-1/2 bg-white/10 sm:left-8" />
       <motion.div
         aria-hidden
         style={{ scaleY }}
-        className="absolute top-10 bottom-14 left-7 w-px origin-top -translate-x-1/2 bg-fg sm:left-8"
+        className="absolute top-10 bottom-14 left-7 w-0.5 origin-top -translate-x-1/2 bg-gradient-to-b from-[#ffd36b] via-[#ff7a1a] to-[#ff2d6f] sm:left-8"
       />
 
       {years.map((year) => (
@@ -30,7 +30,7 @@ export function MilestoneTimeline({ milestones }: { milestones: Milestone[] }) {
             whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
             viewport={{ once: true, margin: "0px 0px -20% 0px" }}
             transition={{ duration: 0.6 }}
-            className="ml-9 w-fit pt-6 pb-2 font-serif text-5xl leading-none tracking-tight sm:ml-10"
+            className="ml-9 w-fit pt-6 pb-2 text-5xl leading-none font-medium tracking-[-0.05em] sm:ml-10"
           >
             {year}
           </motion.h2>
@@ -48,14 +48,14 @@ export function MilestoneTimeline({ milestones }: { milestones: Milestone[] }) {
                   <motion.span
                     aria-hidden
                     variants={{
-                      hidden: { scale: 0, backgroundColor: "var(--bg)" },
+                      hidden: { scale: 0, backgroundColor: "#0a0713" },
                       show: {
                         scale: 1,
-                        backgroundColor: "var(--fg)",
+                        backgroundColor: "#ff7a1a",
                         transition: { type: "spring", stiffness: 420, damping: 18 },
                       },
                     }}
-                    className="absolute top-[1.85rem] left-2 size-2.5 -translate-x-1/2 rounded-full ring-4 ring-bg"
+                    className="absolute top-[1.85rem] left-2 size-2.5 -translate-x-1/2 rounded-full ring-4 ring-[#140d24]"
                   />
                   <motion.div
                     variants={{
@@ -63,15 +63,15 @@ export function MilestoneTimeline({ milestones }: { milestones: Milestone[] }) {
                       show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.55 } },
                     }}
                   >
-                    <p className="flex flex-wrap items-center gap-2 font-mono text-xs text-soft">
+                    <p className="flex flex-wrap items-center gap-2 font-mono text-xs text-lilac/80">
                       {m.date}
                       {m.tag && (
-                        <span className="rounded border border-chip-line bg-chip px-1.5 py-0.5 text-muted">
+                        <span className="rounded-full border border-chip-line bg-chip px-2 py-0.5 text-white/75">
                           {m.tag}
                         </span>
                       )}
                     </p>
-                    <h3 className="mt-1.5 text-xl font-semibold tracking-tight">
+                    <h3 className="mt-1.5 text-xl font-medium tracking-[-0.025em]">
                       {m.href ? (
                         <a
                           href={m.href}
@@ -86,7 +86,7 @@ export function MilestoneTimeline({ milestones }: { milestones: Milestone[] }) {
                         m.title
                       )}
                     </h3>
-                    <p className="mt-1.5 max-w-xl leading-relaxed text-muted">
+                    <p className="mt-1.5 max-w-xl leading-relaxed text-white/75">
                       <RichText text={m.text} />
                     </p>
                   </motion.div>

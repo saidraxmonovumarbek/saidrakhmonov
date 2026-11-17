@@ -1,19 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
+import { Albert_Sans, JetBrains_Mono } from "next/font/google";
 import { SceneBackground } from "@/components/scene-background";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
-import { themeScript } from "@/components/theme-toggle";
 import { site } from "@/content/site";
 import "./globals.css";
 
-const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
-const instrument = Instrument_Serif({
-  variable: "--font-instrument",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-});
+// A free, close match for Aeonik Pro. To use Aeonik itself once you hold a
+// licence, load its .woff2 with next/font/local under the same variable.
+const display = Albert_Sans({ variable: "--font-display", subsets: ["latin"] });
 const jetbrains = JetBrains_Mono({ variable: "--font-jetbrains", subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -31,23 +26,17 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#07040d" },
-    { media: "(prefers-color-scheme: dark)", color: "#07040d" },
-  ],
+  themeColor: "#07040d",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      data-theme="light"
-      suppressHydrationWarning
-      className={`${inter.variable} ${instrument.variable} ${jetbrains.variable} antialiased`}
+      data-theme="dark"
+      className={`${display.variable} ${jetbrains.variable} antialiased`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
       <body className="flex min-h-dvh flex-col">
         <a
           href="#content"
@@ -57,7 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <SceneBackground />
         <SiteNav />
-        <div data-panel className="frame relative z-[1] mx-auto flex w-full max-w-3xl flex-1 flex-col">
+        <div className="relative z-[1] mx-auto flex w-full max-w-3xl flex-1 flex-col px-3 pb-6 sm:px-4">
           <main id="content" className="flex-1">
             {children}
           </main>

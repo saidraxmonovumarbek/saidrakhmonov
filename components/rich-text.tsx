@@ -7,7 +7,7 @@ export function RichText({ text }: { text: string }) {
     <>
       {parts.map((part, i) =>
         i % 2 === 1 ? (
-          <strong key={i} className="font-semibold text-fg underline decoration-1 underline-offset-[3px]">
+          <strong key={i} className="font-medium text-fg underline decoration-[#ff7a1a]/70 decoration-1 underline-offset-[4px]">
             {part}
           </strong>
         ) : (

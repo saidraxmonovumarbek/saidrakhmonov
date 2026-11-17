@@ -10,24 +10,12 @@ export const site = {
   name: "Umarbek Saidrakhmonov",
   /** Short name used as the logo in the top-left corner. */
   shortName: "Umarbek",
-  /** Shown in the avatar tile until you add a photo. */
-  initials: "US",
-  /**
-   * Your photo. Drop a square image into the /public folder
-   * (for example public/avatar.jpg) and set this to "/avatar.jpg".
-   * Leave empty to show your initials instead.
-   */
-  avatar: "",
-
-  /** These rotate one after another under your name. */
+  /** The first one is used in the browser tab title. */
   roles: ["Full Stack Developer.", "Design Engineer.", "Lifelong Learner."],
 
   location: "Tashkent, Uzbekistan",
   /** Used for the little live clock. https://en.wikipedia.org/wiki/List_of_tz_database_time_zones */
   timeZone: "Asia/Tashkent",
-
-  /** Small status pill above your name. Set `text` to "" to hide it. */
-  status: { text: "Open to new projects", available: true },
 
   /** Used for link previews, search engines and the sitemap. */
   url: "https://saidrakhmonov.vercel.app",

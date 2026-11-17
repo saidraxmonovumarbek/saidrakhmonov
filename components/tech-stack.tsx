@@ -20,14 +20,14 @@ export function TechFilters({ value, onChange }: { value: Filter; onChange: (f: 
           aria-selected={value === filter}
           onClick={() => onChange(filter)}
           className={cn(
-            "relative cursor-pointer rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
+            "relative cursor-pointer rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
             value === filter ? "text-fg" : "text-muted hover:text-fg",
           )}
         >
           {value === filter && (
             <motion.span
               layoutId="tech-filter"
-              className="absolute inset-0 rounded-lg border border-chip-line bg-chip shadow-sm"
+              className="absolute inset-0 rounded-full border border-white/15 bg-white/[0.09]"
               transition={{ type: "spring", stiffness: 420, damping: 34 }}
             />
           )}
@@ -43,11 +43,11 @@ export function TechStack() {
   const items = tech.filter((t) => filter === "All" || t.category === filter);
 
   return (
-    <section id="tech">
-      <div className="band" aria-hidden />
-      <div className="rule-b flex flex-wrap items-end justify-between gap-x-4 gap-y-3 px-5 pt-3.5 pb-2.5 sm:px-6">
-        <div className="flex items-baseline gap-3">
-          <h2 className="font-serif text-[2rem] leading-none tracking-[-0.01em]">Tech Stack</h2>
+    <section id="tech" data-panel className="card">
+      <div className="rule-b flex flex-wrap items-end justify-between gap-x-4 gap-y-3 px-5 pt-5 pb-4 sm:px-7 sm:pt-6">
+        <div className="flex items-center gap-3">
+          <span aria-hidden className="bg-lava size-1.5 shrink-0 rounded-full shadow-[0_0_12px_#ff7a1a]" />
+          <h2 className="text-[1.6rem] leading-none font-medium tracking-[-0.03em]">Tech Stack</h2>
           <span className="hidden font-mono text-[11px] tracking-wide text-soft sm:inline">
             ( hover to play )
           </span>
@@ -56,7 +56,7 @@ export function TechStack() {
       </div>
 
       <LayoutGroup>
-        <motion.ul layout className="flex min-h-40 flex-wrap content-start gap-2.5 px-5 py-6 sm:px-6">
+        <motion.ul layout className="flex min-h-40 flex-wrap content-start gap-2.5 px-5 py-6 sm:px-7">
           <AnimatePresence mode="popLayout" initial={false}>
             {items.map((item) => {
               const icon = techIcon(item.icon);
@@ -73,14 +73,14 @@ export function TechStack() {
                     initial="rest"
                     whileHover="play"
                     whileTap="play"
-                    className="group flex cursor-default items-center gap-2 rounded-lg border border-chip-line bg-chip px-3 py-1.5 text-[15px] text-muted transition-colors hover:border-soft hover:text-fg"
+                    className="group flex cursor-default items-center gap-2 rounded-full border border-chip-line bg-chip px-3.5 py-1.5 text-[15px] text-white/80 transition-colors hover:border-white/25 hover:text-fg"
                     style={{ "--brand": icon?.color ?? "var(--fg)" } as React.CSSProperties}
                   >
                     {icon && (
                       <motion.svg
                         viewBox="0 0 24 24"
                         aria-hidden
-                        className="size-4 shrink-0 fill-muted transition-[fill] duration-300 group-hover:fill-(--brand)"
+                        className="size-4 shrink-0 fill-lilac transition-[fill] duration-300 group-hover:fill-(--brand)"
                         variants={{
                           rest: { rotate: 0, scale: 1 },
                           play: {

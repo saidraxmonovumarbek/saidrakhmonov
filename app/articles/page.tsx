@@ -17,8 +17,9 @@ export default async function ArticlesPage() {
         title="Articles"
         text="Notes on building for the web: what I am learning, what went wrong, and what I would do differently next time."
       />
-      <div className="band" aria-hidden />
-      <ArticleList articles={articles} />
+      <div data-panel className="card card-strong">
+        <ArticleList articles={articles} />
+      </div>
     </>
   );
 }

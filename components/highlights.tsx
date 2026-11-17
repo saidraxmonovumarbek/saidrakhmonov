@@ -6,7 +6,7 @@ import { highlights, type Highlight } from "@/content/highlights";
 
 function Card({ item }: { item: Highlight }) {
   const body = (
-    <figure className="flex h-full w-[19.5rem] shrink-0 flex-col rounded-xl border border-chip-line bg-card p-4 transition-colors hover:border-soft">
+    <figure className="flex h-full w-[19.5rem] shrink-0 flex-col rounded-2xl border border-chip-line bg-chip p-4 transition-colors hover:border-white/25">
       <figcaption className="flex items-start gap-3">
         <span className="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-chip text-sm font-semibold text-muted">
           {item.avatar ? (
@@ -18,7 +18,7 @@ function Card({ item }: { item: Highlight }) {
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1 text-[15px] leading-tight font-semibold">
             <span className="truncate">{item.name}</span>
-            {item.verified && <BadgeCheck className="size-4 shrink-0 fill-sky-500 text-white dark:text-card" />}
+            {item.verified && <BadgeCheck className="size-4 shrink-0 fill-sky-500 text-[#140e24]" />}
           </span>
           <span className="block text-[13px] text-muted">{item.handle}</span>
         </span>
@@ -27,7 +27,7 @@ function Card({ item }: { item: Highlight }) {
           <XIcon className="size-3.5" />
         </span>
       </figcaption>
-      <blockquote className="mt-3.5 text-[15px] leading-relaxed text-muted">
+      <blockquote className="mt-3.5 text-[15px] leading-relaxed text-white/80">
         &ldquo;{item.quote}&rdquo;
       </blockquote>
     </figure>

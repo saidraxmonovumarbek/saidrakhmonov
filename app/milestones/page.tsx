@@ -16,8 +16,9 @@ export default function MilestonesPage() {
         title="Milestones"
         text="The journey so far. Small steps and big moments, newest first. Scroll to walk back through time."
       />
-      <div className="band" aria-hidden />
-      <MilestoneTimeline milestones={milestones} />
+      <div data-panel className="card">
+        <MilestoneTimeline milestones={milestones} />
+      </div>
     </>
   );
 }
