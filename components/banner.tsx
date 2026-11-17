@@ -1,82 +1,111 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "motion/react";
-import { useEffect, useRef } from "react";
-import { createScene, SCENE_H, SCENE_W, type SceneTheme } from "@/lib/pixel-scene";
+import { useEffect, useRef, useState } from "react";
+import { createCurrents, type Currents } from "@/lib/currents/engine";
 
-const FPS = 12;
+type Status = "loading" | "ready" | "fallback";
 
 /**
- * The animated pixel-art landscape. It is drawn by code (lib/pixel-scene.ts),
- * follows the site theme (day / night) and pauses when it is off screen.
+ * The hero: a chrome ball riding a current of violet ridges and lava,
+ * rendered live in WebGL (lib/currents). Hold to accelerate, tap to make the
+ * ball jump. Pauses off screen and shows a single frame for reduced motion.
  */
 export function Banner() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const engineRef = useRef<Currents | null>(null);
+  const [status, setStatus] = useState<Status>("loading");
+  const [touched, setTouched] = useState(false);
 
   // gentle parallax while the banner scrolls away
   const { scrollYProgress } = useScroll({ target: wrapRef, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "14%"]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1.02, 1.12]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
+    const wrap = wrapRef.current;
+    if (!canvas || !wrap) return;
 
-    const image = ctx.createImageData(SCENE_W, SCENE_H);
-    const pixels = new Uint32Array(image.data.buffer);
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-
-    const themeNow = (): SceneTheme =>
-      document.documentElement.getAttribute("data-theme") === "dark" ? "night" : "day";
-
-    let theme = themeNow();
-    let scene = createScene(theme);
-    let tick = 40;
-    let visible = true;
-    let raf = 0;
-    let last = 0;
-
-    const paint = () => {
-      scene.render(tick, pixels);
-      ctx.putImageData(image, 0, 0);
-      canvas.dataset.ready = "true";
-    };
-
-    const loop = (now: number) => {
-      raf = requestAnimationFrame(loop);
-      if (!visible || reduced.matches) return;
-      if (now - last < 1000 / FPS) return;
-      last = now;
-      tick++;
-      paint();
-    };
-
-    const themeWatcher = new MutationObserver(() => {
-      const next = themeNow();
-      if (next === theme) return;
-      theme = next;
-      scene = createScene(theme);
-      paint();
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const engine = createCurrents(canvas, {
+      still,
+      onReady: () => setStatus("ready"),
+      onError: () => setStatus("fallback"),
     });
-    themeWatcher.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
+    if (!engine) {
+      setStatus("fallback");
+      return;
+    }
+    engineRef.current = engine;
 
-    const viewWatcher = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-    });
-    viewWatcher.observe(canvas);
-
-    paint();
-    raf = requestAnimationFrame(loop);
+    const resizeWatcher = new ResizeObserver(() => engine.resize());
+    resizeWatcher.observe(canvas);
+    const viewWatcher = new IntersectionObserver(([entry]) => engine.setVisible(entry.isIntersecting));
+    viewWatcher.observe(wrap);
+    const onPageVisibility = () => engine.setVisible(document.visibilityState === "visible");
+    document.addEventListener("visibilitychange", onPageVisibility);
 
     return () => {
-      cancelAnimationFrame(raf);
-      themeWatcher.disconnect();
+      resizeWatcher.disconnect();
       viewWatcher.disconnect();
+      document.removeEventListener("visibilitychange", onPageVisibility);
+      engine.destroy();
+      engineRef.current = null;
+    };
+  }, []);
+
+  // pointer: move to steer the camera, hold to accelerate, tap to jump
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    let downAt = 0;
+    let holdTimer = 0;
+    let holding = false;
+
+    const onMove = (event: PointerEvent) => {
+      const rect = wrap.getBoundingClientRect();
+      engineRef.current?.setPointer(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        ((event.clientY - rect.top) / rect.height) * 2 - 1,
+      );
+    };
+    const onDown = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      downAt = performance.now();
+      holding = true;
+      setTouched(true);
+      holdTimer = window.setTimeout(() => {
+        if (holding) engineRef.current?.setBoost(true);
+      }, 180);
+    };
+    const onUp = () => {
+      if (!holding) return;
+      holding = false;
+      clearTimeout(holdTimer);
+      engineRef.current?.setBoost(false);
+      if (performance.now() - downAt < 180) engineRef.current?.jump();
+    };
+    const onLeave = () => engineRef.current?.releasePointer();
+    const onMenu = (event: Event) => event.preventDefault();
+
+    wrap.addEventListener("pointermove", onMove);
+    wrap.addEventListener("pointerdown", onDown);
+    wrap.addEventListener("pointerleave", onLeave);
+    wrap.addEventListener("contextmenu", onMenu);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    window.addEventListener("blur", onUp);
+    return () => {
+      clearTimeout(holdTimer);
+      wrap.removeEventListener("pointermove", onMove);
+      wrap.removeEventListener("pointerdown", onDown);
+      wrap.removeEventListener("pointerleave", onLeave);
+      wrap.removeEventListener("contextmenu", onMenu);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+      window.removeEventListener("blur", onUp);
     };
   }, []);
 
@@ -84,18 +113,24 @@ export function Banner() {
     <div className="rule-b p-2">
       <div
         ref={wrapRef}
-        className="relative overflow-hidden rounded-md bg-[#b1d6e0] dark:bg-[#17264d]"
-        style={{ aspectRatio: `${SCENE_W} / ${SCENE_H}` }}
+        className="currents relative aspect-[4/5] cursor-grab touch-pan-y overflow-hidden rounded-md bg-[#07040d] select-none active:cursor-grabbing min-[480px]:aspect-[4/3] sm:aspect-[16/9]"
       >
         <motion.canvas
           ref={canvasRef}
-          width={SCENE_W}
-          height={SCENE_H}
           style={{ y, scale }}
           role="img"
-          aria-label="Animated pixel-art landscape: waterfalls pouring from forested cliffs into a lake"
-          className="pixelated absolute inset-0 size-full opacity-0 transition-opacity duration-700 data-[ready=true]:opacity-100"
+          aria-label="Animated scene: a chrome ball rolls through a flowing field of violet ridges, parting a ribbon of glowing lava"
+          data-ready={status === "ready"}
+          className="absolute inset-0 size-full opacity-0 transition-opacity duration-1000 data-[ready=true]:opacity-100"
         />
+        {status === "fallback" && <div aria-hidden className="currents-fallback absolute inset-0" />}
+        <p
+          aria-hidden
+          data-hidden={touched || status !== "ready"}
+          className="pointer-events-none absolute bottom-3 left-3.5 font-mono text-[10.5px] tracking-[0.18em] text-white/60 uppercase [text-shadow:0_1px_8px_rgb(0_0_0/0.6)] transition-opacity duration-700 data-[hidden=true]:opacity-0 sm:bottom-4 sm:left-5 sm:text-[11px]"
+        >
+          Hold to accelerate · Tap to jump
+        </p>
       </div>
     </div>
   );

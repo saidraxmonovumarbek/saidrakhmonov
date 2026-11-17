@@ -321,3 +321,20 @@ body {
 .frame::after {
   right: 0;
 }
+
+/* ------------------------------------------------------------------ */
+/* Hero scene (components/banner.tsx)                                  */
+/* ------------------------------------------------------------------ */
+
+.currents {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Shown only when WebGL2 is unavailable. */
+.currents-fallback {
+  background:
+    radial-gradient(circle at 58% 46%, #d9d6e6 0 3%, #5d5a6b 9%, #141118 13.5%, transparent 14%),
+    linear-gradient(115deg, transparent 47%, #ffb347 49%, #ff5a36 51%, #e8174a 52.5%, transparent 54.5%),
+    repeating-linear-gradient(115deg, #a594e6 0 5px, #1c1233 5px 8px);
+}
