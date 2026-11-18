@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from "react";
 import {
-  holdSound,
   onSoundState,
   prepareSound,
   soundState,
-  soundWanted,
   SOUNDTRACK,
   startSound,
   stopSound,
@@ -16,8 +14,10 @@ import { cn } from "@/lib/utils";
 
 /**
  * Plays the soundtrack on a loop for every visitor and lets them turn it off.
- * Browsers hold sound back until the first interaction, so the music starts
- * on the first click, tap or key press anywhere on the page.
+ * It is on by default on every visit: turning it off is not remembered, so a
+ * refresh starts the music again. Browsers hold sound back until the first
+ * interaction, so the music starts on the first click, tap or key press
+ * anywhere on the page.
  */
 export function SoundToggle() {
   const [state, setState] = useState<SoundState>(soundState);
@@ -25,10 +25,6 @@ export function SoundToggle() {
   useEffect(() => onSoundState(setState), []);
 
   useEffect(() => {
-    if (!soundWanted()) {
-      holdSound();
-      return;
-    }
     let armed = false;
     const onGesture = (event: Event) => {
       // the toggle button handles its own clicks

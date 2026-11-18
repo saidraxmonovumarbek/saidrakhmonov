@@ -80,22 +80,31 @@ function Cover({ project }: { project: Project }) {
 }
 
 export function ProjectCard({ project }: { project: Project }) {
+  const at = (field: string) => `projects.slug=${project.slug}.${field}`;
   return (
     <article className="group flex h-full flex-col p-2.5 pb-3 [container-type:inline-size]">
-      <Cover project={project} />
+      <div data-edit={`projects.slug=${project.slug}`}>
+        <Cover project={project} />
+      </div>
       <div className="mt-4 flex items-start justify-between gap-3 px-0.5">
         <div className="min-w-0">
-          <h3 className="text-[1.35rem] leading-tight font-medium tracking-[-0.03em]">{project.title}</h3>
-          <p className="mt-0.5 text-sm text-muted">{project.tagline}</p>
+          <h3 data-edit={at("title")} className="text-[1.35rem] leading-tight font-medium tracking-[-0.03em]">
+            {project.title}
+          </h3>
+          <p data-edit={at("tagline")} className="mt-0.5 text-sm text-muted">
+            {project.tagline}
+          </p>
         </div>
-        <span className="mt-1.5 flex shrink-0 items-center gap-2 text-sm font-medium text-muted">
-          <span className={cn("size-1.5 rounded-full", STATUS[project.status])} />
+        <span data-edit={at("status")} className="mt-1.5 flex shrink-0 items-center gap-2 text-sm font-medium text-muted">
+          <span className={cn("size-1.5 rounded-full", STATUS[project.status] ?? "bg-soft")} />
           {project.status}
         </span>
       </div>
-      <p className="mt-4 flex-1 px-0.5 leading-relaxed text-white/75">{project.description}</p>
+      <p data-edit={at("description")} className="mt-4 flex-1 px-0.5 leading-relaxed text-white/75">
+        {project.description}
+      </p>
       <div className="mt-5 flex items-end justify-between gap-3 px-0.5 pb-1">
-        <ul className="flex flex-wrap gap-1.5">
+        <ul data-edit={at("tags")} className="flex flex-wrap gap-1.5">
           {project.tags.map((tag) => (
             <li
               key={tag}

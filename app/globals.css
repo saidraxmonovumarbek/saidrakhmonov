@@ -332,3 +332,35 @@ body {
     linear-gradient(115deg, transparent 47%, #ffb347 49%, #ff5a36 51%, #e8174a 52.5%, transparent 54.5%),
     repeating-linear-gradient(115deg, #a594e6 0 5px, #1c1233 5px 8px);
 }
+
+/* ------------------------------------------------------------------ */
+/* Edit mode (only for the logged-in owner): every editable piece of   */
+/* text gets a faint outline, and a solid one under the pointer.       */
+html[data-editing] [data-edit] {
+  cursor: text;
+  border-radius: 6px;
+  outline: 1px dashed rgb(255 122 26 / 0.35);
+  outline-offset: 3px;
+  transition: outline-color 0.15s, background-color 0.15s;
+}
+html[data-editing] [data-edit]:hover,
+html[data-editing] [data-edit][data-edit-active] {
+  outline: 1.5px solid #ff7a1a;
+  background-color: rgb(255 122 26 / 0.08);
+}
+
+/* The "hold / tap" hint at the bottom of the first screen fades in after the intro. */
+.hero-hint {
+  animation: hero-hint-in 0.8s cubic-bezier(0.21, 0.47, 0.32, 0.98) 1.4s both;
+}
+@keyframes hero-hint-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-hint {
+    animation: none;
+  }
+}

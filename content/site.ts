@@ -55,7 +55,7 @@ export const site = {
     text: "The best way to predict the future is to invent it.",
     author: "Alan Kay",
   },
-} as const;
+};
 
 /** Top navigation. Items inside `more` appear under the "More" dropdown. */
 export const nav = {
@@ -68,4 +68,4 @@ export const nav = {
     { label: "Milestones", href: "/milestones", note: "The journey so far" },
     { label: "Experience", href: "/experience", note: "Work and education" },
   ],
-} as const;
+};

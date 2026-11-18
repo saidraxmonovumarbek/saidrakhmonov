@@ -15,9 +15,12 @@ export function Section({
   className,
   flush = false,
   strong = false,
+  edit,
 }: {
   id?: string;
   title: string;
+  /** Content address of the title, for the on-page editor. */
+  edit?: string;
   /** Small note next to the heading. */
   aside?: ReactNode;
   /** Link or controls on the right side of the heading row. */
@@ -34,7 +37,7 @@ export function Section({
       <div className="rule-b flex flex-wrap items-end justify-between gap-x-4 gap-y-2 px-5 pt-5 pb-4 sm:px-7 sm:pt-6">
         <div className="flex items-center gap-3">
           <span aria-hidden className="bg-lava size-1.5 shrink-0 rounded-full shadow-[0_0_12px_#ff7a1a]" />
-          <SplitText text={title} className="text-[1.6rem] leading-none font-medium tracking-[-0.03em]" />
+          <SplitText text={title} edit={edit} className="text-[1.6rem] leading-none font-medium tracking-[-0.03em]" />
           {aside}
         </div>
         {action}
@@ -49,10 +52,13 @@ export function PageHeader({
   eyebrow,
   title,
   text,
+  edit,
 }: {
   eyebrow: string;
   title: string;
   text: string;
+  /** Content address of the title and text, e.g. "copy.pages.projects". */
+  edit?: string;
 }) {
   return (
     <header data-panel className="card mt-6 px-5 pt-12 pb-10 sm:px-7 sm:pt-16">
@@ -61,9 +67,12 @@ export function PageHeader({
         as="h1"
         immediate
         text={title}
+        edit={edit && `${edit}.title`}
         className="mt-4 text-5xl leading-[0.98] font-medium tracking-[-0.045em] sm:text-7xl"
       />
-      <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-muted">{text}</p>
+      <p data-edit={edit && `${edit}.text`} className="mt-5 max-w-xl text-[17px] leading-relaxed text-muted">
+        {text}
+      </p>
     </header>
   );
 }

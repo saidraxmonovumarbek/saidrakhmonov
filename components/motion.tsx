@@ -94,12 +94,15 @@ export function SplitText({
   className,
   as = "h2",
   immediate = false,
+  edit,
 }: {
   text: string;
   className?: string;
   as?: "h1" | "h2" | "span";
   /** Animate on mount instead of waiting for scroll. */
   immediate?: boolean;
+  /** Content address for the on-page editor (see lib/content-path.ts). */
+  edit?: string;
 }) {
   const Tag = motion[as];
   const words = text.split(" ");
@@ -108,6 +111,7 @@ export function SplitText({
     <Tag
       className={cn("inline-block", className)}
       aria-label={text}
+      data-edit={edit}
       initial="hidden"
       {...(immediate
         ? { animate: "show" }

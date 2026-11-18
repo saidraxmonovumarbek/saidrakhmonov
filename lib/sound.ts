@@ -1,8 +1,10 @@
 /**
  * The site soundtrack: one looping track, shared by the whole app.
  *
- * Browsers only allow sound after the visitor interacts with the page, so
- * `start()` is tried on load and again on the first click, tap or key press.
+ * The music is on by default on every visit and every refresh: turning it off
+ * only lasts until the page is reloaded. Browsers only allow sound after the
+ * visitor interacts with the page, so `startSound()` is tried on load and
+ * again on the first click, tap or key press.
  * When the file's host allows cross-origin reads, the track is also routed
  * through an analyser so the scene can pulse with the bass (`soundLevel()`).
  */
@@ -14,7 +16,6 @@ export const SOUNDTRACK = {
 };
 
 const VOLUME = 0.55;
-const PREF_KEY = "sound";
 
 export type SoundState = "idle" | "waiting" | "playing" | "paused";
 
@@ -42,19 +43,6 @@ export function onSoundState(fn: (s: SoundState) => void) {
   };
 }
 
-/** Did the visitor turn the sound off on an earlier visit? */
-export function soundWanted(): boolean {
-  try {
-    return localStorage.getItem(PREF_KEY) !== "off";
-  } catch {
-    return true;
-  }
-}
-function remember(on: boolean) {
-  try {
-    localStorage.setItem(PREF_KEY, on ? "on" : "off");
-  } catch {}
-}
 
 /** Check (once) whether the host lets us read the audio data, before the element is made. */
 export function prepareSound(): Promise<boolean> {
@@ -122,7 +110,6 @@ export function startSound(fromGesture: boolean): Promise<boolean> {
   return el
     .play()
     .then(() => {
-      remember(true);
       setState("playing");
       rampTo(VOLUME, 2.5);
       return true;
@@ -133,13 +120,7 @@ export function startSound(fromGesture: boolean): Promise<boolean> {
     });
 }
 
-/** Respect an earlier "off" without starting anything. */
-export function holdSound() {
-  setState("paused");
-}
-
 export function stopSound() {
-  remember(false);
   setState("paused");
   rampTo(0, 0.45, () => audio?.pause());
 }

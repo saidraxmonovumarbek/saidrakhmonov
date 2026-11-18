@@ -36,10 +36,11 @@ export function MilestoneTimeline({ milestones }: { milestones: Milestone[] }) {
           </motion.h2>
           <ol>
             {milestones
+              .map((m, index) => ({ ...m, index }))
               .filter((m) => m.year === year)
               .map((m) => (
                 <motion.li
-                  key={m.title}
+                  key={`${m.index}-${m.title}`}
                   initial="hidden"
                   whileInView="show"
                   viewport={{ once: true, margin: "0px 0px -30% 0px" }}
@@ -64,14 +65,17 @@ export function MilestoneTimeline({ milestones }: { milestones: Milestone[] }) {
                     }}
                   >
                     <p className="flex flex-wrap items-center gap-2 font-mono text-xs text-lilac/80">
-                      {m.date}
+                      <span data-edit={`milestones.${m.index}.date`}>{m.date}</span>
                       {m.tag && (
-                        <span className="rounded-full border border-chip-line bg-chip px-2 py-0.5 text-white/75">
+                        <span
+                          data-edit={`milestones.${m.index}.tag`}
+                          className="rounded-full border border-chip-line bg-chip px-2 py-0.5 text-white/75"
+                        >
                           {m.tag}
                         </span>
                       )}
                     </p>
-                    <h3 className="mt-1.5 text-xl font-medium tracking-[-0.025em]">
+                    <h3 data-edit={`milestones.${m.index}.title`} className="mt-1.5 text-xl font-medium tracking-[-0.025em]">
                       {m.href ? (
                         <a
                           href={m.href}
@@ -86,7 +90,7 @@ export function MilestoneTimeline({ milestones }: { milestones: Milestone[] }) {
                         m.title
                       )}
                     </h3>
-                    <p className="mt-1.5 max-w-xl leading-relaxed text-white/75">
+                    <p data-edit={`milestones.${m.index}.text`} className="mt-1.5 max-w-xl leading-relaxed text-white/75">
                       <RichText text={m.text} />
                     </p>
                   </motion.div>

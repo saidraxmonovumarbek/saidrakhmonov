@@ -3,7 +3,7 @@
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useState } from "react";
 import { techIcon } from "@/components/tech-icon";
-import { tech, techCategories } from "@/content/tech";
+import { techCategories, type Tech } from "@/content/tech";
 import { cn } from "@/lib/utils";
 
 const FILTERS = ["All", ...techCategories] as const;
@@ -38,7 +38,7 @@ export function TechFilters({ value, onChange }: { value: Filter; onChange: (f: 
   );
 }
 
-export function TechStack() {
+export function TechStack({ tech, title, note }: { tech: Tech[]; title: string; note: string }) {
   const [filter, setFilter] = useState<Filter>("All");
   const items = tech.filter((t) => filter === "All" || t.category === filter);
 
@@ -47,9 +47,11 @@ export function TechStack() {
       <div className="rule-b flex flex-wrap items-end justify-between gap-x-4 gap-y-3 px-5 pt-5 pb-4 sm:px-7 sm:pt-6">
         <div className="flex items-center gap-3">
           <span aria-hidden className="bg-lava size-1.5 shrink-0 rounded-full shadow-[0_0_12px_#ff7a1a]" />
-          <h2 className="text-[1.6rem] leading-none font-medium tracking-[-0.03em]">Tech Stack</h2>
-          <span className="hidden font-mono text-[11px] tracking-wide text-soft sm:inline">
-            ( hover to play )
+          <h2 data-edit="copy.home.tech" className="text-[1.6rem] leading-none font-medium tracking-[-0.03em]">
+            {title}
+          </h2>
+          <span data-edit="copy.home.techNote" className="hidden font-mono text-[11px] tracking-wide text-soft sm:inline">
+            {note}
           </span>
         </div>
         <TechFilters value={filter} onChange={setFilter} />
@@ -93,7 +95,7 @@ export function TechStack() {
                         <path d={icon.path} />
                       </motion.svg>
                     )}
-                    {item.name}
+                    <span data-edit={`tech.name=${item.name}.name`}>{item.name}</span>
                   </motion.span>
                 </motion.li>
               );

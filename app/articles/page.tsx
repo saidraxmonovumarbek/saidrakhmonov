@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { ArticleList } from "@/components/article-list";
 import { PageHeader } from "@/components/section";
-import { getArticles } from "@/lib/articles";
+import { publishedArticles } from "@/lib/articles";
+import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Articles",
@@ -9,16 +10,19 @@ export const metadata: Metadata = {
 };
 
 export default async function ArticlesPage() {
-  const articles = await getArticles();
+  const content = await getContent();
+  const articles = publishedArticles(content.articles);
+  const t = content.copy.pages.articles;
   return (
     <>
       <PageHeader
         eyebrow={`${articles.length} articles`}
-        title="Articles"
-        text="Notes on building for the web: what I am learning, what went wrong, and what I would do differently next time."
+        title={t.title}
+        text={t.text}
+        edit="copy.pages.articles"
       />
       <div data-panel className="card card-strong">
-        <ArticleList articles={articles} />
+        <ArticleList articles={articles} empty={t.empty} />
       </div>
     </>
   );

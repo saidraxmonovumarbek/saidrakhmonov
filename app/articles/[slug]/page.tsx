@@ -6,9 +6,13 @@ import { Suspense } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Reveal, SplitText } from "@/components/motion";
-import { site } from "@/content/site";
 import { getArticle, getArticles } from "@/lib/articles";
+import { getContent } from "@/lib/content";
 import { formatDate } from "@/lib/utils";
+
+// Articles written after the last deploy are rendered on their first visit;
+// let that first render wait for the menu (which reads the URL) instead of failing.
+export const instant = false;
 
 export async function generateStaticParams() {
   const articles = await getArticles();
@@ -19,6 +23,7 @@ export async function generateMetadata({ params }: PageProps<"/articles/[slug]">
   const { slug } = await params;
   const article = await getArticle(slug);
   if (!article) return {};
+  const { site } = await getContent();
   return {
     title: article.title,
     description: article.summary,
@@ -86,14 +91,19 @@ async function ArticleView({ params }: Pick<PageProps<"/articles/[slug]">, "para
           as="h1"
           immediate
           text={article.title}
+          edit={`articles.slug=${article.slug}`}
           className="mt-4 text-[2.4rem] leading-[1.04] font-medium tracking-[-0.045em] sm:text-[3.4rem]"
         />
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">{article.summary}</p>
+        <p data-edit={`articles.slug=${article.slug}`} className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
+          {article.summary}
+        </p>
       </header>
 
       <div data-panel className="card card-strong">
         <Reveal className="prose px-5 py-10 sm:px-8 sm:py-12" delay={0.15}>
-          <Markdown remarkPlugins={[remarkGfm]}>{article.content}</Markdown>
+          <div data-edit={`articles.slug=${article.slug}`}>
+            <Markdown remarkPlugins={[remarkGfm]}>{article.content}</Markdown>
+          </div>
         </Reveal>
       </div>
 

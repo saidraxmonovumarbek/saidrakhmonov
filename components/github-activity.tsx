@@ -1,7 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { InView } from "@/components/in-view";
 import { Section } from "@/components/section";
-import { site } from "@/content/site";
 import { getContributions } from "@/lib/github";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -26,8 +25,8 @@ function label(day: { date: string; count: number | null }) {
   return `${day.count} contribution${day.count === 1 ? "" : "s"} on ${date}`;
 }
 
-export async function GithubActivity() {
-  const data = await getContributions(site.githubUsername);
+export async function GithubActivity({ username, title }: { username: string; title: string }) {
+  const data = await getContributions(username);
   const weeks = data.weeks;
   const columns = { gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))` };
 
@@ -48,15 +47,16 @@ export async function GithubActivity() {
   return (
     <Section
       id="activity"
-      title="GitHub Activity"
+      title={title}
+      edit="copy.home.activity"
       action={
         <a
-          href={`https://github.com/${site.githubUsername}`}
+          href={`https://github.com/${username}`}
           target="_blank"
           rel="noreferrer"
           className="group flex items-center gap-1 pb-1 text-[15px] text-muted transition-colors hover:text-fg"
         >
-          @{site.githubUsername}
+          @{username}
           <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </a>
       }

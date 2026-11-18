@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local stand-in for the database (npm run dev without DATABASE_URL)
+/.data

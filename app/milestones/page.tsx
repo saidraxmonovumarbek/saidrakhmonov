@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
 import { MilestoneTimeline } from "@/components/milestone-timeline";
 import { PageHeader } from "@/components/section";
-import { milestones } from "@/content/milestones";
+import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Milestones",
   description: "The journey so far, one step at a time.",
 };
 
-export default function MilestonesPage() {
+export default async function MilestonesPage() {
+  const { milestones, copy } = await getContent();
   return (
     <>
       <PageHeader
         eyebrow={`${milestones.length} milestones`}
-        title="Milestones"
-        text="The journey so far. Small steps and big moments, newest first. Scroll to walk back through time."
+        title={copy.pages.milestones.title}
+        text={copy.pages.milestones.text}
+        edit="copy.pages.milestones"
       />
       <div data-panel className="card">
         <MilestoneTimeline milestones={milestones} />

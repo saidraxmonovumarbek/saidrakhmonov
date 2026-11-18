@@ -34,6 +34,7 @@ export function Quote({ text, author }: { text: string; author: string }) {
         <QuoteIcon className="mx-auto size-8 fill-current text-lilac" aria-hidden />
         <blockquote
           aria-label={text}
+          data-edit="site.quote.text"
           className="mt-7 flex flex-wrap justify-center gap-x-[0.28em] text-[1.75rem] leading-[1.3] font-normal tracking-[-0.025em] sm:text-[2.2rem]"
         >
           {words.map((word, i) => (
@@ -47,7 +48,7 @@ export function Quote({ text, author }: { text: string; author: string }) {
           ))}
         </blockquote>
         <motion.figcaption style={{ opacity: authorOpacity }} className="mt-6 font-mono text-sm text-muted">
-          — {author}
+          — <span data-edit="site.quote.author">{author}</span>
         </motion.figcaption>
       </figure>
     </section>

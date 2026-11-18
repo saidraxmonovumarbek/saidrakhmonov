@@ -6,14 +6,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { SoundToggle } from "@/components/sound-toggle";
-import { nav, site } from "@/content/site";
+import type { Content } from "@/lib/content-defaults";
 import { cn } from "@/lib/utils";
 
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SiteNav() {
+export function SiteNav({ nav, shortName }: { nav: Content["nav"]; shortName: string }) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -55,13 +55,13 @@ export function SiteNav() {
           onClick={close}
           className="text-[1.3rem] leading-none font-medium tracking-[-0.03em] transition-opacity hover:opacity-70"
         >
-          {site.shortName}
+          <span data-edit="site.shortName">{shortName}</span>
           <span className="text-lava">.</span>
         </Link>
 
         <nav aria-label="Main" className="flex items-center gap-1">
           <ul className="hidden items-center sm:flex">
-            {nav.main.map((item) => {
+            {nav.main.map((item, i) => {
               const active = isActive(pathname, item.href);
               return (
                 <li key={item.href}>
@@ -73,7 +73,7 @@ export function SiteNav() {
                       active ? "font-semibold text-fg" : "text-muted hover:text-fg",
                     )}
                   >
-                    {item.label}
+                    <span data-edit={`nav.main.${i}.label`}>{item.label}</span>
                     {active && (
                       <motion.span
                         layoutId="nav-dot"
@@ -125,7 +125,7 @@ export function SiteNav() {
                       className="absolute top-full right-0 w-56 origin-top-right pt-3"
                     >
                       <div className="glass rounded-2xl p-1.5">
-                        {nav.more.map((item) => (
+                        {nav.more.map((item, i) => (
                           <Link
                             key={item.href}
                             href={item.href}
@@ -136,8 +136,12 @@ export function SiteNav() {
                               isActive(pathname, item.href) && "bg-white/[0.07]",
                             )}
                           >
-                            <span className="block text-[15px] font-medium">{item.label}</span>
-                            <span className="block text-[13px] text-muted">{item.note}</span>
+                            <span data-edit={`nav.more.${i}.label`} className="block text-[15px] font-medium">
+                              {item.label}
+                            </span>
+                            <span data-edit={`nav.more.${i}.note`} className="block text-[13px] text-muted">
+                              {item.note}
+                            </span>
                           </Link>
                         ))}
                       </div>

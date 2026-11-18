@@ -1,23 +1,29 @@
 import Link from "next/link";
 import { ContactIcon } from "@/components/icons";
-import { nav, site } from "@/content/site";
+import { ViewCount } from "@/components/view-count";
+import type { Content } from "@/lib/content-defaults";
 import { SOUNDTRACK } from "@/lib/sound";
 
 const YEAR = new Date().getFullYear();
 
-export function SiteFooter() {
+export function SiteFooter({ content }: { content: Content }) {
+  const { site, nav, copy } = content;
   return (
     <footer data-panel className="card">
       <div className="flex flex-col gap-6 px-5 pt-8 pb-2 sm:flex-row sm:items-start sm:justify-between sm:px-7">
         <div>
-          <p className="text-[15px] font-medium">{site.name}</p>
-          <p className="mt-1 text-sm text-muted">
-            © {YEAR} · Designed and built with care.
+          <p className="text-[15px] font-medium" data-edit="site.name">
+            {site.name}
+          </p>
+          <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-sm text-muted">
+            <span>© {YEAR}</span>
+            <span aria-hidden>·</span>
+            <span data-edit="copy.footer.tagline">{copy.footer.tagline}</span>
           </p>
           <p className="mt-1 text-[13px] text-soft">
             Soundtrack: {SOUNDTRACK.title} by {SOUNDTRACK.artist}
           </p>
-          <div className="mt-4 flex items-center gap-1">
+          <div className="mt-4 flex flex-wrap items-center gap-1">
             {site.contact
               .filter((c) => c.icon !== "resume")
               .map((c) => (
@@ -32,6 +38,7 @@ export function SiteFooter() {
                   <ContactIcon name={c.icon} className="size-[18px]" />
                 </a>
               ))}
+            <ViewCount className="ml-2 flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 text-[13px] text-muted tabular-nums" />
           </div>
         </div>
         <ul className="grid grid-cols-2 gap-x-10 gap-y-2 text-[15px]">

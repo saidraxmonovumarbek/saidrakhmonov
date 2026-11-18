@@ -68,6 +68,8 @@ function usable(hex: string): boolean {
   return lum > 0.22 && lum < 0.9;
 }
 
+export const TECH_ICON_KEYS = Object.keys(ICONS);
+
 export function techIcon(key: string): { path: string; color: string } | null {
   const icon = ICONS[key];
   if (!icon) return null;
